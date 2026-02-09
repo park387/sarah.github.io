@@ -1,12 +1,74 @@
-<!doctype html>
-<html lang="ko">
-<head>
-  <meta charset="utf-8">
-  <title>내 첫 웹사이트</title>
-</head>
-<body>
-  <h1>안녕하세요!</h1>
-  <p>이건 내가 만든 진짜 링크입니다.</p>
-</body>
-</html>
-!
+// app/users/[id]/page.jsx
+
+const DEMO_USERS = {
+  "f6f2ad3317264ac8": {
+    name: "Mango",
+    bio: "내 소개 한 줄. 여기에 내 설명을 넣어요.",
+    avatar: "https://picsum.photos/200",
+    links: [
+      { label: "Instagram", url: "https://instagram.com" },
+      { label: "Blog", url: "https://example.com" }
+    ]
+  },
+  "abc123": {
+    name: "Melon",
+    bio: "두 번째 유저 데모",
+    avatar: "https://picsum.photos/201",
+    links: [{ label: "YouTube", url: "https://youtube.com" }]
+  }
+};
+
+export default function UserPage({ params }) {
+  const user = DEMO_USERS[params.id];
+
+  if (!user) {
+    return (
+      <main style={{ padding: 24, fontFamily: "system-ui" }}>
+        <h1>사용자를 찾을 수 없습니다</h1>
+        <p>요청한 ID: {params.id}</p>
+      </main>
+    );
+  }
+
+  return (
+    <main style={{ minHeight: "100vh", padding: 24, fontFamily: "system-ui", background: "#0b0f14", color: "#e8eef6" }}>
+      <div style={{ maxWidth: 720, margin: "0 auto" }}>
+        <div style={{ display: "flex", gap: 16, alignItems: "center", padding: 18, borderRadius: 16, border: "1px solid #263248", background: "#111826" }}>
+          <img src={user.avatar} alt="avatar" width="88" height="88" style={{ borderRadius: "50%", border: "1px solid #263248" }} />
+          <div>
+            <h1 style={{ margin: 0, fontSize: 22 }}>{user.name}</h1>
+            <p style={{ margin: "8px 0 0", color: "#c9d6ea", lineHeight: 1.5 }}>{user.bio}</p>
+          </div>
+        </div>
+
+        <div style={{ marginTop: 14, padding: 18, borderRadius: 16, border: "1px solid #263248", background: "#111826" }}>
+          <h2 style={{ margin: 0, fontSize: 18 }}>Links</h2>
+          <div style={{ marginTop: 12, display: "grid", gap: 10 }}>
+            {user.links.map((l) => (
+              <a
+                key={l.url}
+                href={l.url}
+                target="_blank"
+                rel="noreferrer"
+                style={{
+                  padding: "12px 14px",
+                  borderRadius: 12,
+                  border: "1px solid #2b3a55",
+                  background: "#0b1220",
+                  color: "#cfe0ff",
+                  textDecoration: "none"
+                }}
+              >
+                {l.label} → {l.url}
+              </a>
+            ))}
+          </div>
+        </div>
+
+        <p style={{ marginTop: 14, color: "#9fb3d3", fontSize: 13 }}>
+          URL 예시: /users/f6f2ad3317264ac8
+        </p>
+      </div>
+    </main>
+  );
+}
