@@ -1,234 +1,141 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>간단 게시판</title>
+  <meta charset="UTF-8" />
+  <title>Pink Cake Cafe Board</title>
+
   <style>
-    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans KR", Arial, sans-serif; margin: 0; background: #0b0f14; color: #e8eef6; }
-    .wrap { max-width: 760px; margin: 0 auto; padding: 24px; }
-    .card { background: #111826; border: 1px solid #263248; border-radius: 16px; padding: 16px; }
-    h1 { margin: 0 0 10px; font-size: 22px; }
-    .hint { margin: 6px 0 0; color: #9fb3d3; font-size: 13px; line-height: 1.5; }
-
-    label { display: block; margin: 12px 0 6px; color: #c9d6ea; font-size: 14px; }
-    input, textarea {
-      width: 100%; box-sizing: border-box;
-      padding: 12px; border-radius: 12px;
-      border: 1px solid #2b3a55; background: #0b1220; color: #e8eef6;
-      outline: none;
+    body {
+      margin: 0;
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(to bottom, #ffe6f0, #fff0f5);
     }
-    input:focus, textarea:focus { border-color: #6aa8ff; }
-    textarea { min-height: 120px; resize: vertical; }
 
-    .row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+    .container {
+      max-width: 600px;
+      margin: 40px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(255, 182, 193, 0.3);
+    }
+
+    h1 {
+      text-align: center;
+      color: #ff69b4;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border-radius: 10px;
+      border: 1px solid #ffb6c1;
+      font-size: 14px;
+    }
+
     button {
-      padding: 12px 14px; border-radius: 12px;
-      border: 1px solid #2b3a55; background: #15223a; color: #e8eef6;
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      background: #ff69b4;
+      color: white;
+      font-size: 15px;
       cursor: pointer;
     }
-    button.primary { background: #2a6fff; border-color: #2a6fff; color: white; }
-    button.danger { background: #2a1520; border-color: #5a2a3a; }
-    button:disabled { opacity: .5; cursor: not-allowed; }
 
-    .posts { margin-top: 14px; display: grid; gap: 12px; }
-    .post { background: #111826; border: 1px solid #263248; border-radius: 16px; padding: 14px; }
-    .meta { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; color: #9fb3d3; font-size: 12px; margin-top: 6px; }
-    .post h3 { margin: 0; font-size: 18px; }
-    .post p { margin: 10px 0 0; color: #cfe0ff; line-height: 1.6; white-space: pre-wrap; }
-    .empty { margin-top: 14px; color: #9fb3d3; font-size: 14px; }
-    .footer { margin-top: 14px; color: #9fb3d3; font-size: 12px; }
-    a { color: #cfe0ff; }
+    button:hover {
+      background: #ff85c1;
+    }
+
+    .post {
+      background: #fff5f9;
+      padding: 15px;
+      border-radius: 12px;
+      margin-top: 15px;
+      border: 1px solid #ffd6e7;
+    }
+
+    .post h3 {
+      margin: 0;
+      color: #ff69b4;
+    }
+
+    .post p {
+      margin: 5px 0 0 0;
+    }
   </style>
 </head>
+
 <body>
-  <div class="wrap">
-    <div class="card">
-      <h1>📌 간단 게시판</h1>
-      <p class="hint">
-        이 게시판은 <b>서버 없이</b> 동작합니다. 글은 이 브라우저의 저장공간(<b>localStorage</b>)에 저장돼요.
-        다른 PC/휴대폰에서는 공유되지 않습니다.
-      </p>
 
-      <label for="title">제목</label>
-      <input id="title" placeholder="제목을 입력하세요" maxlength="60" />
+  <div class="container">
+    <h1>🍰 Pink Cake Cafe</h1>
 
-      <label for="content">내용</label>
-      <textarea id="content" placeholder="내용을 입력하세요"></textarea>
+    <input id="title" placeholder="제목을 입력하세요" />
+    <textarea id="content" rows="4" placeholder="내용을 입력하세요"></textarea>
+    <button onclick="addPost()">게시하기</button>
 
-      <div class="row">
-        <button class="primary" id="btnAdd">게시물 올리기</button>
-        <button id="btnClearInputs">입력 지우기</button>
-        <button class="danger" id="btnClearAll" title="저장된 글을 전부 삭제합니다.">전체 삭제</button>
-      </div>
-    </div>
-
-    <div id="posts" class="posts"></div>
-    <div id="empty" class="empty" style="display:none;">아직 게시물이 없어요. 첫 글을 올려보세요 🙂</div>
-
-    <div class="footer">
-      GitHub Pages URL 예시: <span id="urlHint"></span>
-    </div>
+    <div id="posts"></div>
   </div>
 
-  <script>
-    const KEY = "simple_posts_v1";
+  <script type="module">
 
-    const $title = document.getElementById("title");
-    const $content = document.getElementById("content");
-    const $posts = document.getElementById("posts");
-    const $empty = document.getElementById("empty");
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } 
+      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-    document.getElementById("urlHint").textContent = location.href;
+    const firebaseConfig = {
+      apiKey: "AIzaSyBIplfg8eF2ZsGx-LFziw1cb5WuMtd0Cnc",
+      authDomain: "sara-bbb25.firebaseapp.com",
+      projectId: "sara-bbb25",
+      storageBucket: "sara-bbb25.firebasestorage.app",
+      messagingSenderId: "386319278885",
+      appId: "1:386319278885:web:8b65befd4c0d41910af0cc"
+    };
 
-    function nowKSTString() {
-      // 브라우저 시간 기준 표시(대부분 KST)
-      const d = new Date();
-      const pad = (n) => String(n).padStart(2, "0");
-      return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
-    }
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-    function loadPosts() {
-      try {
-        return JSON.parse(localStorage.getItem(KEY) || "[]");
-      } catch {
-        return [];
-      }
-    }
+    const postsRef = collection(db, "posts");
+    const q = query(postsRef);
 
-    function savePosts(posts) {
-      localStorage.setItem(KEY, JSON.stringify(posts));
-    }
-
-    function escapeHtml(s) {
-      return s.replace(/[&<>"']/g, (c) => ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#39;"
-      }[c]));
-    }
-
-    function render() {
-      const posts = loadPosts();
-      $posts.innerHTML = "";
-
-      if (posts.length === 0) {
-        $empty.style.display = "block";
-        return;
-      }
-      $empty.style.display = "none";
-
-      posts.forEach((p, idx) => {
-        const div = document.createElement("div");
-        div.className = "post";
-        div.innerHTML = `
-          <h3>${escapeHtml(p.title)}</h3>
-          <div class="meta">
-            <span>작성: ${escapeHtml(p.createdAt)}</span>
-            <span>#${posts.length - idx}</span>
-          </div>
-          <p>${escapeHtml(p.content)}</p>
-          <div class="row" style="margin-top:12px;">
-            <button data-action="edit" data-idx="${idx}">수정</button>
-            <button class="danger" data-action="delete" data-idx="${idx}">삭제</button>
-          </div>
-        `;
-        $posts.appendChild(div);
-      });
-    }
-
-    function addPost() {
-      const title = $title.value.trim();
-      const content = $content.value.trim();
+    window.addPost = async function () {
+      const title = document.getElementById("title").value;
+      const content = document.getElementById("content").value;
 
       if (!title || !content) {
-        alert("제목과 내용을 입력해 주세요!");
+        alert("내용을 입력해주세요 🍰");
         return;
       }
 
-      const posts = loadPosts();
-      posts.unshift({
+      await addDoc(postsRef, {
         title,
         content,
-        createdAt: nowKSTString()
+        createdAt: new Date()
       });
-      savePosts(posts);
 
-      $title.value = "";
-      $content.value = "";
-      render();
-    }
+      document.getElementById("title").value = "";
+      document.getElementById("content").value = "";
+    };
 
-    function clearInputs() {
-      $title.value = "";
-      $content.value = "";
-      $title.focus();
-    }
+    onSnapshot(q, (snapshot) => {
+      const postsDiv = document.getElementById("posts");
+      postsDiv.innerHTML = "";
 
-    function clearAll() {
-      if (!confirm("저장된 게시물을 전부 삭제할까요?")) return;
-      localStorage.removeItem(KEY);
-      render();
-    }
-
-    function deletePost(idx) {
-      const posts = loadPosts();
-      posts.splice(idx, 1);
-      savePosts(posts);
-      render();
-    }
-
-    function editPost(idx) {
-      const posts = loadPosts();
-      const p = posts[idx];
-      const newTitle = prompt("제목 수정", p.title);
-      if (newTitle === null) return;
-
-      const newContent = prompt("내용 수정", p.content);
-      if (newContent === null) return;
-
-      p.title = newTitle.trim() || p.title;
-      p.content = newContent.trim() || p.content;
-      savePosts(posts);
-      render();
-    }
-
-    document.getElementById("btnAdd").addEventListener("click", addPost);
-    document.getElementById("btnClearInputs").addEventListener("click", clearInputs);
-    document.getElementById("btnClearAll").addEventListener("click", clearAll);
-
-    // 카드 내 Enter 처리: 제목에서 Enter 누르면 내용으로, Ctrl+Enter는 업로드
-    $title.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        $content.focus();
-      }
-    });
-    $content.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
-        e.preventDefault();
-        addPost();
-      }
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        postsDiv.innerHTML += `
+          <div class="post">
+            <h3>${data.title}</h3>
+            <p>${data.content}</p>
+          </div>
+        `;
+      });
     });
 
-    // 게시물 버튼들(수정/삭제) 이벤트 위임
-    $posts.addEventListener("click", (e) => {
-      const btn = e.target.closest("button[data-action]");
-      if (!btn) return;
-      const action = btn.dataset.action;
-      const idx = Number(btn.dataset.idx);
-
-      if (action === "delete") {
-        if (!confirm("이 글을 삭제할까요?")) return;
-        deletePost(idx);
-      } else if (action === "edit") {
-        editPost(idx);
-      }
-    });
-
-    render();
   </script>
+
 </body>
 </html>
