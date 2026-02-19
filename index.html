@@ -1,90 +1,186 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <title>Pink Cake Cafe Board</title>
-
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>🍰 Pink Cake Cafe Board</title>
   <style>
-    body {
-      margin: 0;
-      font-family: 'Arial', sans-serif;
-      background: linear-gradient(to bottom, #ffe6f0, #fff0f5);
+    :root{
+      --bg1:#fff0f6; --bg2:#ffe6f0; --card:#ffffffcc; --line:#ffd1e3;
+      --ink:#3b2a33; --muted:#7a5b69; --pink:#ff5fa2; --pink2:#ff86ba;
+      --choco:#5a3340; --shadow:0 18px 40px rgba(255,95,162,.15); --shadow2:0 10px 24px rgba(90,51,64,.08);
+      --r:22px;
     }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans KR", Arial, sans-serif;
+      background: linear-gradient(180deg,var(--bg2),var(--bg1));
+      color:var(--ink);
+      min-height:100vh;
+    }
+    .wrap{max-width:960px;margin:0 auto;padding:26px 16px 60px}
+    .hero{
+      background:rgba(255,255,255,.85);
+      border:1px solid var(--line);
+      border-radius:var(--r);
+      padding:18px;
+      box-shadow:var(--shadow);
+    }
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{
+      width:52px;height:52px;border-radius:18px;
+      background:linear-gradient(135deg,var(--pink),#ffb0d1);
+      display:grid;place-items:center;color:#fff;font-size:24px;
+      box-shadow:0 12px 22px rgba(255,95,162,.22);
+      flex:0 0 auto;
+    }
+    h1{margin:0;font-size:20px}
+    .sub{margin:6px 0 0;color:var(--muted);font-size:13px;line-height:1.5}
+    .badge{
+      display:inline-flex;align-items:center;gap:8px;margin-top:10px;
+      padding:8px 12px;border-radius:999px;background:#fff;border:1px solid var(--line);
+      box-shadow:var(--shadow2);font-size:12px;color:var(--choco)
+    }
+    .dot{width:10px;height:10px;border-radius:999px;background:var(--pink);box-shadow:0 0 0 5px rgba(255,95,162,.15)}
+    .grid{display:grid;grid-template-columns:380px 1fr;gap:14px;margin-top:14px}
+    @media (max-width:900px){.grid{grid-template-columns:1fr}}
+    .card{
+      background:rgba(255,255,255,.85);
+      border:1px solid var(--line);
+      border-radius:var(--r);
+      padding:16px;
+      box-shadow:var(--shadow2);
+      backdrop-filter: blur(8px);
+    }
+    .card h2{margin:0 0 10px;font-size:15px;color:var(--choco);display:flex;gap:8px;align-items:center}
+    label{display:block;margin:10px 0 6px;font-size:13px;color:var(--choco)}
+    input,textarea{
+      width:100%;
+      padding:12px;
+      border-radius:16px;
+      border:1px solid var(--line);
+      background:linear-gradient(180deg,#fff,#fff7fb);
+      outline:none;
+      font-size:14px;
+      color:var(--ink);
+    }
+    input:focus,textarea:focus{border-color:var(--pink2);box-shadow:0 0 0 4px rgba(255,134,186,.18)}
+    textarea{min-height:140px;resize:vertical}
+    .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+    .btn{
+      border:0;border-radius:16px;padding:12px 14px;cursor:pointer;
+      font-weight:800;letter-spacing:-.2px;display:inline-flex;gap:8px;align-items:center;
+      transition:transform .06s ease,opacity .1s ease;
+    }
+    .btn:active{transform:translateY(1px)}
+    .btn.primary{background:linear-gradient(135deg,var(--pink),var(--pink2));color:#fff;box-shadow:0 14px 26px rgba(255,95,162,.22)}
+    .btn.ghost{background:#fff;border:1px solid var(--line);color:var(--choco)}
+    .btn.danger{background:linear-gradient(135deg,#6b2d3d,#a04a64);color:#fff;box-shadow:0 14px 26px rgba(90,51,64,.18)}
+    .mini{margin:8px 0 0;color:var(--muted);font-size:12px;line-height:1.5}
 
-    .container {
-      max-width: 600px;
-      margin: 40px auto;
-      background: white;
-      padding: 30px;
-      border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(255, 182, 193, 0.3);
+    .toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+    .search{flex:1 1 240px;max-width:460px;position:relative}
+    .search input{padding-left:38px}
+    .search:before{content:"🔎";position:absolute;left:12px;top:50%;transform:translateY(-50%);opacity:.7}
+    .pill{padding:8px 12px;border-radius:999px;border:1px dashed #ffb0d1;background:#fff;color:var(--muted);font-size:12px;white-space:nowrap}
+    .posts{display:grid;gap:12px}
+    .post{
+      background:#fff;border:1px solid var(--line);border-radius:var(--r);
+      padding:14px;box-shadow:var(--shadow2);
     }
-
-    h1 {
-      text-align: center;
-      color: #ff69b4;
+    .post h3{margin:0;font-size:16px;color:var(--choco);display:flex;gap:8px;align-items:center}
+    .lock{font-size:14px}
+    .post p{margin:10px 0 0;line-height:1.65;white-space:pre-wrap;color:#5a3a48}
+    .meta{margin-top:10px;color:var(--muted);font-size:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+    .meta .left{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+    .tag{padding:6px 10px;border-radius:999px;background:#fff0f7;border:1px solid var(--line);color:#8a4a60}
+    .actions{display:flex;gap:8px;align-items:center}
+    .tiny{
+      border:1px solid var(--line);background:#fff;color:var(--choco);
+      padding:8px 10px;border-radius:14px;cursor:pointer;font-weight:800;
     }
-
-    input, textarea {
-      width: 100%;
-      padding: 12px;
-      margin-bottom: 15px;
-      border-radius: 10px;
-      border: 1px solid #ffb6c1;
-      font-size: 14px;
+    .tiny.danger{background:#fff0f0;border-color:#ffc1c7;color:#8a2f3f}
+    .empty{padding:18px;border-radius:var(--r);border:1px dashed #ffb0d1;background:rgba(255,255,255,.8);color:var(--muted);text-align:center}
+    .toast{
+      position:fixed;left:50%;bottom:16px;transform:translateX(-50%);
+      background:rgba(255,255,255,.92);border:1px solid var(--line);
+      padding:10px 12px;border-radius:999px;box-shadow:var(--shadow);
+      display:none;z-index:50;font-size:13px;color:var(--choco)
     }
-
-    button {
-      width: 100%;
-      padding: 12px;
-      border: none;
-      border-radius: 10px;
-      background: #ff69b4;
-      color: white;
-      font-size: 15px;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background: #ff85c1;
-    }
-
-    .post {
-      background: #fff5f9;
-      padding: 15px;
-      border-radius: 12px;
-      margin-top: 15px;
-      border: 1px solid #ffd6e7;
-    }
-
-    .post h3 {
-      margin: 0;
-      color: #ff69b4;
-    }
-
-    .post p {
-      margin: 5px 0 0 0;
-    }
+    .checkRow{display:flex;gap:10px;align-items:center;margin-top:10px}
+    .checkRow input{width:auto}
+    .editBox{margin-top:10px;display:grid;gap:8px}
+    .editBox input,.editBox textarea{background:#fff}
   </style>
 </head>
 
 <body>
+  <div class="wrap">
+    <div class="hero">
+      <div class="brand">
+        <div class="logo">🍰</div>
+        <div>
+          <h1>Pink Cake Cafe Board</h1>
+          <p class="sub">비밀글 + 작성자만 수정/삭제 + 실시간 반영</p>
+          <div class="badge"><span class="dot"></span><span id="status">로그인 연결 중…</span></div>
+        </div>
+      </div>
+    </div>
 
-  <div class="container">
-    <h1>🍰예슬이네 카페</h1>
+    <div class="grid">
+      <div class="card">
+        <h2>🧁 글 올리기</h2>
 
-    <input id="title" placeholder="제목을 입력하세요" />
-    <textarea id="content" rows="4" placeholder="내용을 입력하세요"></textarea>
-    <button onclick="addPost()">게시하기</button>
+        <label for="nickname">닉네임</label>
+        <input id="nickname" placeholder="예: sara" maxlength="20" />
 
-    <div id="posts"></div>
+        <label for="title">제목</label>
+        <input id="title" placeholder="예: 딸기 생크림 후기" maxlength="60" />
+
+        <label for="content">내용</label>
+        <textarea id="content" placeholder="예: 오늘 케이크가 정말 부드러웠어요…"></textarea>
+
+        <div class="checkRow">
+          <input id="isPrivate" type="checkbox" />
+          <label for="isPrivate" style="margin:0;cursor:pointer;">🔒 비밀글로 올리기(작성자만 열람)</label>
+        </div>
+
+        <div class="row">
+          <button class="btn primary" id="btnAdd">🍓 올리기</button>
+          <button class="btn ghost" id="btnClear">🧼 지우기</button>
+        </div>
+
+        <p class="mini">
+          익명 로그인으로 “작성자”가 구분돼요. 다른 사람은 비밀글 내용이 안 보이고, 수정/삭제도 못해요.
+        </p>
+      </div>
+
+      <div class="card">
+        <div class="toolbar">
+          <div class="search">
+            <input id="search" placeholder="제목/내용/닉네임 검색(비밀글은 작성자만 내용 검색됨)" />
+          </div>
+          <div class="pill">📍 <span id="count">0</span> posts</div>
+        </div>
+
+        <div id="posts" class="posts"></div>
+        <div id="empty" class="empty" style="display:none;">아직 게시물이 없어요 🙂</div>
+      </div>
+    </div>
   </div>
 
-  <script type="module">
+  <div class="toast" id="toast"></div>
 
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } 
-      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+    import {
+      getFirestore, collection, addDoc, serverTimestamp,
+      query, orderBy, onSnapshot, doc, updateDoc, deleteDoc
+    } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+    import {
+      getAuth, signInAnonymously, onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBIplfg8eF2ZsGx-LFziw1cb5WuMtd0Cnc",
@@ -92,50 +188,287 @@
       projectId: "sara-bbb25",
       storageBucket: "sara-bbb25.firebasestorage.app",
       messagingSenderId: "386319278885",
-      appId: "1:386319278885:web:8b65befd4c0d41910af0cc"
+      appId: "1:386319278885:web:8b65befd4c0d41910af0cc",
+      measurementId: "G-8T80SNK8PP"
     };
 
+    const $status = document.getElementById("status");
+    const $nickname = document.getElementById("nickname");
+    const $title = document.getElementById("title");
+    const $content = document.getElementById("content");
+    const $isPrivate = document.getElementById("isPrivate");
+    const $posts = document.getElementById("posts");
+    const $empty = document.getElementById("empty");
+    const $search = document.getElementById("search");
+    const $count = document.getElementById("count");
+    const $toast = document.getElementById("toast");
+
+    function toast(msg){
+      $toast.textContent = msg;
+      $toast.style.display = "block";
+      clearTimeout(window.__t);
+      window.__t = setTimeout(()=> $toast.style.display="none", 1600);
+    }
+    function escapeHtml(s) {
+      return (s || "").replace(/[&<>"']/g, (c) => ({
+        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+      }[c]));
+    }
+    function fmt(ts){
+      if(!ts) return "방금";
+      const d = ts.toDate();
+      const pad = (n)=>String(n).padStart(2,"0");
+      return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    }
+
+    // 닉네임 저장
+    const NKEY="cake_nick_v1";
+    const savedNick = localStorage.getItem(NKEY);
+    if(savedNick) $nickname.value = savedNick;
+    $nickname.addEventListener("input", ()=>{
+      const v = $nickname.value.trim();
+      if(v) localStorage.setItem(NKEY, v);
+    });
+
+    // Firebase init
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
+    const auth = getAuth(app);
 
-    const postsRef = collection(db, "posts");
-    const q = query(postsRef);
+    let myUid = null;
 
-    window.addPost = async function () {
-      const title = document.getElementById("title").value;
-      const content = document.getElementById("content").value;
+    // 익명 로그인
+    onAuthStateChanged(auth, (user) => {
+      if(user){
+        myUid = user.uid;
+        $status.textContent = `로그인됨 ✅ (익명)`;
+      } else {
+        $status.textContent = "로그인 필요 ❌";
+      }
+    });
 
-      if (!title || !content) {
-        alert("내용을 입력해주세요 🍰");
+    try{
+      await signInAnonymously(auth);
+    }catch(e){
+      console.error(e);
+      $status.textContent = "로그인 실패 ❌ (Authorized domains 확인)";
+      toast("로그인 실패: Authentication > Authorized domains에 park387.github.io 추가했는지 확인!");
+    }
+
+    // 글 작성
+    async function addPost(){
+      if(!myUid){
+        toast("로그인 연결이 아직 안 됐어요. 새로고침 후 다시!");
+        return;
+      }
+      const nickname = ($nickname.value.trim() || "guest").slice(0,20);
+      const title = $title.value.trim();
+      const content = $content.value.trim();
+      const isPrivate = $isPrivate.checked;
+
+      if(!title || !content){
+        toast("제목과 내용을 입력해 주세요!");
         return;
       }
 
-      await addDoc(postsRef, {
-        title,
-        content,
-        createdAt: new Date()
-      });
+      try{
+        await addDoc(collection(db, "posts"), {
+          authorUid: myUid,
+          nickname,
+          title,
+          content,
+          isPrivate,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        });
+        $title.value = "";
+        $content.value = "";
+        $isPrivate.checked = false;
+        toast("올렸어요 🍓");
+      }catch(e){
+        console.error(e);
+        toast("업로드 실패: Rules/Auth 설정 확인!");
+      }
+    }
 
-      document.getElementById("title").value = "";
-      document.getElementById("content").value = "";
-    };
-
-    onSnapshot(q, (snapshot) => {
-      const postsDiv = document.getElementById("posts");
-      postsDiv.innerHTML = "";
-
-      snapshot.forEach((doc) => {
-        const data = doc.data();
-        postsDiv.innerHTML += `
-          <div class="post">
-            <h3>${data.title}</h3>
-            <p>${data.content}</p>
-          </div>
-        `;
-      });
+    document.getElementById("btnAdd").addEventListener("click", addPost);
+    document.getElementById("btnClear").addEventListener("click", ()=>{
+      $title.value=""; $content.value=""; $title.focus();
+      toast("지웠어요 🧼");
     });
 
-  </script>
+    $content.addEventListener("keydown",(e)=>{
+      if(e.key==="Enter" && (e.ctrlKey || e.metaKey)){
+        e.preventDefault(); addPost();
+      }
+    });
 
+    // 실시간 목록 (최신 정렬)
+    let allDocs = []; // {id, data}
+    const q = query(collection(db,"posts"), orderBy("createdAt","desc"));
+
+    onSnapshot(q, (snap)=>{
+      allDocs = [];
+      snap.forEach(d=>{
+        allDocs.push({ id: d.id, data: d.data() });
+      });
+      render();
+    }, (e)=>{
+      console.error(e);
+      toast("불러오기 실패: Rules 확인!");
+    });
+
+    $search.addEventListener("input", render);
+
+    function matchesKw(p, kw){
+      if(!kw) return true;
+      const t = (p.title||"").toLowerCase();
+      const n = (p.nickname||"").toLowerCase();
+      const c = (p.content||"").toLowerCase();
+      return t.includes(kw) || n.includes(kw) || c.includes(kw);
+    }
+
+    function render(){
+      const kw = $search.value.trim().toLowerCase();
+
+      const filtered = allDocs.filter(({data})=>{
+        // 비밀글은 작성자 아니면 content는 표시도 검색도 의미가 없음(하지만 규칙상 read 자체가 안 될 수 있음)
+        // 규칙이 적용되면 비밀글 문서가 작성자가 아니면 아예 snapshot에 안 올 수도 있어요.
+        // 올라온 데이터 기준으로만 렌더.
+        return matchesKw(data, kw);
+      });
+
+      $count.textContent = String(filtered.length);
+      $posts.innerHTML = "";
+
+      if(filtered.length === 0){
+        $empty.style.display = "block";
+        return;
+      }
+      $empty.style.display = "none";
+
+      for(const item of filtered){
+        const id = item.id;
+        const p = item.data;
+        const isOwner = (myUid && p.authorUid === myUid);
+        const isPrivate = (p.isPrivate === true);
+
+        // 비밀글인데 owner가 아니면(대부분은 rules로 아예 안 내려옴)
+        const canSeeContent = !isPrivate || isOwner;
+
+        const div = document.createElement("div");
+        div.className = "post";
+
+        const title = escapeHtml(p.title);
+        const nickname = escapeHtml(p.nickname || "guest");
+        const time = escapeHtml(fmt(p.updatedAt || p.createdAt));
+
+        const content = canSeeContent
+          ? escapeHtml(p.content)
+          : "비밀글입니다 🔒";
+
+        div.innerHTML = `
+          <h3>
+            ${isPrivate ? '<span class="lock">🔒</span>' : '<span class="lock">🍰</span>'}
+            <span>${title}</span>
+          </h3>
+
+          <p>${content}</p>
+
+          <div class="meta">
+            <div class="left">
+              <span class="tag">🍰 ${nickname}</span>
+              <span class="tag">🕒 ${time}</span>
+              ${isPrivate ? '<span class="tag">비밀글</span>' : '<span class="tag">공개글</span>'}
+            </div>
+            <div class="actions">
+              ${isOwner ? `
+                <button class="tiny" data-action="edit" data-id="${id}">수정</button>
+                <button class="tiny danger" data-action="delete" data-id="${id}">삭제</button>
+              ` : ``}
+            </div>
+          </div>
+
+          ${isOwner ? `
+            <div class="editBox" data-editbox="${id}" style="display:none;">
+              <input data-ed-title="${id}" maxlength="60" value="${escapeHtml(p.title)}" />
+              <textarea data-ed-content="${id}">${escapeHtml(p.content)}</textarea>
+              <div class="checkRow" style="margin-top:2px">
+                <input type="checkbox" data-ed-private="${id}" ${isPrivate ? "checked" : ""} />
+                <label style="margin:0;cursor:pointer;">🔒 비밀글 유지</label>
+              </div>
+              <div class="row" style="margin-top:8px">
+                <button class="btn primary" data-action="save" data-id="${id}">저장</button>
+                <button class="btn ghost" data-action="cancel" data-id="${id}">취소</button>
+              </div>
+            </div>
+          ` : ``}
+        `;
+
+        $posts.appendChild(div);
+      }
+    }
+
+    // 이벤트 위임: 수정/삭제/저장/취소
+    $posts.addEventListener("click", async (e)=>{
+      const btn = e.target.closest("button");
+      if(!btn) return;
+
+      const action = btn.dataset.action;
+      const id = btn.dataset.id;
+      if(!action || !id) return;
+
+      const postRef = doc(db, "posts", id);
+
+      if(action === "edit"){
+        const box = document.querySelector(`[data-editbox="${id}"]`);
+        if(box) box.style.display = (box.style.display === "none" ? "block" : "none");
+        return;
+      }
+
+      if(action === "cancel"){
+        const box = document.querySelector(`[data-editbox="${id}"]`);
+        if(box) box.style.display = "none";
+        return;
+      }
+
+      if(action === "save"){
+        const t = document.querySelector(`[data-ed-title="${id}"]`)?.value?.trim();
+        const c = document.querySelector(`[data-ed-content="${id}"]`)?.value?.trim();
+        const priv = document.querySelector(`[data-ed-private="${id}"]`)?.checked === true;
+
+        if(!t || !c){
+          toast("제목/내용이 비어 있어요!");
+          return;
+        }
+
+        try{
+          await updateDoc(postRef, {
+            title: t,
+            content: c,
+            isPrivate: priv,
+            updatedAt: serverTimestamp()
+          });
+          toast("수정 완료 ✨");
+        }catch(err){
+          console.error(err);
+          toast("수정 실패: 작성자만 가능!");
+        }
+        return;
+      }
+
+      if(action === "delete"){
+        if(!confirm("정말 삭제할까요?")) return;
+        try{
+          await deleteDoc(postRef);
+          toast("삭제 완료 🗑️");
+        }catch(err){
+          console.error(err);
+          toast("삭제 실패: 작성자만 가능!");
+        }
+        return;
+      }
+    });
+  </script>
 </body>
 </html>
