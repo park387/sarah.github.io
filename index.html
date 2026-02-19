@@ -176,7 +176,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
     import {
       getFirestore, collection, addDoc, serverTimestamp,
-      query, orderBy, onSnapshot, doc, updateDoc, deleteDoc
+      query, where, orderBy, onSnapshot, doc, updateDoc, deleteDoc
     } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
     import {
       getAuth, signInAnonymously, onAuthStateChanged
@@ -236,16 +236,55 @@
     const auth = getAuth(app);
 
     let myUid = null;
+    let allDocs = [];
 
     // 익명 로그인
+
+    let unsubPublic = null;
+    let unsubMine = null;
     onAuthStateChanged(auth, (user) => {
       if(user){
         myUid = user.uid;
         $status.textContent = `로그인됨 ✅ (익명)`;
+    
+        // 기존 구독 해제
+        if(unsubPublic) unsubPublic();
+        if(unsubMine) unsubMine();
+    
+        // 1️⃣ 공개글만
+        const qPublic = query(
+          collection(db, "posts"),
+          where("isPrivate", "==", false),
+          orderBy("createdAt", "desc")
+        );
+    
+        // 2️⃣ 내 글만
+        const qMine = query(
+          collection(db, "posts"),
+          where("authorUid", "==", myUid),
+          orderBy("createdAt", "desc")
+        );
+    
+        let publicDocs = [];
+        let myDocs = [];
+    
+        unsubPublic = onSnapshot(qPublic, (snap)=>{
+          publicDocs = snap.docs.map(d => ({ id: d.id, data: d.data() }));
+          allDocs = mergeDocs(publicDocs, myDocs);
+          render();
+        });
+    
+        unsubMine = onSnapshot(qMine, (snap)=>{
+          myDocs = snap.docs.map(d => ({ id: d.id, data: d.data() }));
+          allDocs = mergeDocs(publicDocs, myDocs);
+          render();
+        });
+    
       } else {
         $status.textContent = "로그인 필요 ❌";
       }
     });
+
 
     try{
       await signInAnonymously(auth);
@@ -303,21 +342,6 @@
       }
     });
 
-    // 실시간 목록 (최신 정렬)
-    let allDocs = []; // {id, data}
-    const q = query(collection(db,"posts"), orderBy("createdAt","desc"));
-
-    onSnapshot(q, (snap)=>{
-      allDocs = [];
-      snap.forEach(d=>{
-        allDocs.push({ id: d.id, data: d.data() });
-      });
-      render();
-    }, (e)=>{
-      console.error(e);
-      toast("불러오기 실패: Rules 확인!");
-    });
-
     $search.addEventListener("input", render);
 
     function matchesKw(p, kw){
@@ -326,6 +350,15 @@
       const n = (p.nickname||"").toLowerCase();
       const c = (p.content||"").toLowerCase();
       return t.includes(kw) || n.includes(kw) || c.includes(kw);
+    }
+    function mergeDocs(a, b){
+      const map = new Map();
+      for(const x of [...a, ...b]) map.set(x.id, x);
+      return [...map.values()].sort((x,y)=>{
+        const tx = x.data.createdAt?.toMillis?.() ?? 0;
+        const ty = y.data.createdAt?.toMillis?.() ?? 0;
+        return ty - tx;
+      });
     }
 
     function render(){
